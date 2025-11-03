@@ -44,4 +44,13 @@ interface PostDao {
 
     @Query("UPDATE Post_Entity SET looks=looks+1 WHERE id=:id")
     fun look(id: Long)
+
+    @Query("UPDATE Post_Entity SET likes = likes + 1 WHERE id = :id")
+    fun incrementLikeById(id: Long)
+
+    @Query("SELECT COUNT(*) > 0 FROM Post_Entity WHERE id = :id")
+    suspend fun postExists(id: Long): Boolean
+
+    @Query("SELECT COUNT(*) FROM Post_Entity WHERE id = :id AND author = :author")
+    suspend fun postExistsByIdAndAuthor(id: Long, author: String): Boolean
 }

@@ -17,6 +17,12 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import kotlin.random.Random
 import ru.netology.nmedia.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ru.netology.nmedia.db.AppDb
+import android.database.sqlite.SQLiteException
+import com.google.gson.JsonSyntaxException
 
 class FCMService : FirebaseMessagingService() {
 
@@ -48,22 +54,48 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d("FCM_message", "New message:${message.data}")
-        message.data[action]?.let {
-            try {
-                when (Action.valueOf(it)) {
-                    Action.LIKE -> handleLike(
-                        gson.fromJson(message.data[content],
-                            ActionLike::class.java)
-                    )
+        message.data[action]?.let { actionValue ->
+            try {                               // try-catch для LIKE
+                val like = try {                // try-catch для парсинга JSON
+                    gson.fromJson(message.data[content], ActionLike::class.java)
+                } catch (e: JsonSyntaxException) {
+                    Log.e("FCM_json_error", "Failed to parse FCM message content: ${e.message}. Message: ${message.data[content]}", e)
+                    return@let  // Выход из блока
+                }
+                // Если парсинг успешен, продолжить
+                when (Action.valueOf(actionValue)) {
+                    Action.LIKE -> handleLike(like)
                 }
             } catch (e: IllegalArgumentException) {
-                Log.e("FCM_exception", "Unknown action:$it", e)
+                Log.e("FCM_exception", "Unknown action: $actionValue", e)
+            }
         }
-      }
     }
+
 
     @SuppressLint("StringFormatMatches")
     private fun handleLike(like: ActionLike) {
+        // Увеличение likes
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val db = AppDb.getInstance(this@FCMService)   // Получаем DAO из БД
+                val postIdLong = like.postId.toLong()  // конвертация типа Int to Long
+
+                // Проверяем, существует ли пост
+                if (db.postDao().postExistsByIdAndAuthor(postIdLong, like.postAuthor)) {
+                    db.postDao().incrementLikeById(postIdLong)// add likes if post exist
+                    Log.d("FCM_save", "Likes incremented for post ${like.postId} by author ${like.postAuthor}")
+                } else {
+                    Log.e("FCM_postId_author_error", "Failed to save like: Post with id ${like.postId} " +
+                            "and author '${like.postAuthor}' not found")
+                }
+
+            } catch (e: SQLiteException) {
+                Log.e("FCM_BD_error", "Failed to save like due to DB error: ${e.message}", e)
+            }
+        }
+
+
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(
