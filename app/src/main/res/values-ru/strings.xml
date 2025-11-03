@@ -21,5 +21,6 @@
     <string name="google_play_unavailable">Google Play Services недоступны</string>
     <string name="channel_remote_name">Канал уведомлений</string>
     <string name="channel_remote_description">Уведомление о лайках</string>
-    <string name="notification_user_liked">%s лайкнул пост %s</string>
+    <string name="notification_user_liked">%1$s лайкнул пост %2$d автора %3$s</string>
+    <string name="notification_user_liked">%1$s liked post %2$d of %3$s</string>
 </resources>
