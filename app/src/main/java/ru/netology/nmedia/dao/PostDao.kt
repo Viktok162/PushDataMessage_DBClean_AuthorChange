@@ -16,15 +16,15 @@ interface PostDao {
         if (post.id == 0L){
             insert(post)
         } else{
-            updateById(post.id, post.content)
+            updateById(post.id, post.author, post.content)
         }
     }
 
     @Insert
     fun insert(post: PostEntity)
 
-    @Query("UPDATE Post_Entity SET content=:content WHERE id=:id")
-    fun updateById(id: Long, content:String)
+    @Query("UPDATE Post_Entity SET author=:author, content=:content WHERE id=:id")
+    fun updateById(id: Long, author:String, content:String)
 
     @Query(
         """

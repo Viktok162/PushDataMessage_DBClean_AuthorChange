@@ -1,8 +1,8 @@
 ## Домашнее задание к занятию «Notifications & Pushes»
 
 
-###     Data Message   edit 2
+###     Data Message, DB Clearn, Author change   edit 3
 
-![Screenshot](img/Screenshot_Notification_800.png)
+![Screenshot](img/Screenshot_Push_DB_author.png)
 
 

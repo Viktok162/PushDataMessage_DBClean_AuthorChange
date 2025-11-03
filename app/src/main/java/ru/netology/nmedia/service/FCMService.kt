@@ -1,6 +1,7 @@
 package ru.netology.nmedia.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -61,6 +62,7 @@ class FCMService : FirebaseMessagingService() {
       }
     }
 
+    @SuppressLint("StringFormatMatches")
     private fun handleLike(like: ActionLike) {
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
@@ -68,6 +70,7 @@ class FCMService : FirebaseMessagingService() {
                 getString(
                     R.string.notification_user_liked,
                     like.userName,
+                    like.postId,   // add postId
                     like.postAuthor
                 )
             )
