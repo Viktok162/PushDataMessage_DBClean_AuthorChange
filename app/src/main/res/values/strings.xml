@@ -31,5 +31,4 @@
     <string name="channel_remote_description">Push by Like</string>
     <string name="notification_user_liked">%1$s liked post %2$d of %3$s</string>
 
-
 </resources>
