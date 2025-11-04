@@ -101,7 +101,7 @@ class FCMService : FirebaseMessagingService() {
             .setContentTitle(
                 getString(
                     R.string.notification_user_liked,
-                    like.userName,
+                    like.readerName,
                     like.postId,   // add postId
                     like.postAuthor
                 )
@@ -127,8 +127,8 @@ class FCMService : FirebaseMessagingService() {
     }
 
     data class ActionLike (
-        val userId: Int,
-        val userName: String,
+        val readerId: Int,
+        val readerName: String,
         val postId: Int,
         val postAuthor: String
     )
